@@ -15,6 +15,11 @@ template_inputs:
   description: For example, '/etc/ansible/roles/foobar' . Look at '/etc/ansible/ansible.cfg'
     roles_path option to find what is your roles_path
   advanced: false
+- name: force
+  required: false
+  input_type: user
+  description: If yes, any modified files in the working repository will be discarded.
+  advanced: true
 provider_type: Ansible
 kind: job_template
 model: JobTemplate
@@ -23,6 +28,7 @@ model: JobTemplate
 ---
 - hosts: all
   tasks:
-    - command: git clone <%= input('git_repository') %> <%= input('location') %>
-      register: out
-    - debug: var=out
+    - git:
+        repo: <%= input('git_repository') %> 
+        dest: <%= input('location') %>
+        force: <%= input('force').present? ? input('force') : 'no' %>
